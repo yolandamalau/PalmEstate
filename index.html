@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PalmEstate - Smart Agriculture Monitoring</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* =========================
+   GLOBAL
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:#f8fafc;
+  color:#0f172a;
+  overflow-x:hidden;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:999;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:18px 8%;
+
+  background:rgba(15,23,42,0.75);
+  backdrop-filter:blur(10px);
+
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+/* =========================
+   LOGO NAVBAR
+========================= */
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:18px;
+
+  overflow:visible;
+}
+
+.logo img{
+
+  width:45px;
+  height:45px;
+
+  object-fit:contain;
+
+  transform:scale(3.5);
+
+  transform-origin:center;
+
+  border-radius:50%;
+}
+
+/* TEXT LOGO */
+
+.logo h2{
+  color:white;
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
+.nav-menu{
+  display:flex;
+  gap:28px;
+  align-items:center;
+}
+
+.nav-menu a{
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.nav-menu a:hover{
+  color:#38bdf8;
+}
+
+.login-btn{
+  background:#2563eb;
+  color:white;
+  padding:10px 20px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.login-btn:hover{
+  background:#1d4ed8;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  min-height:100vh;
+
+  background:
+  linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),
+  url('img/bg.jpg') center/cover;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+
+  color:white;
+  padding:120px 8% 80px;
+}
+
+.hero-content{
+  max-width:950px;
+}
+
+.hero-tag{
+  display:inline-block;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.15);
+
+  padding:10px 18px;
+  border-radius:999px;
+
+  margin-bottom:22px;
+  font-size:14px;
+}
+
+.hero h1{
+  font-size:64px;
+  line-height:1.2;
+  margin-bottom:20px;
+}
+
+.hero h1 span{
+  color:#38bdf8;
+}
+
+.hero p{
+  font-size:18px;
+  opacity:0.9;
+  line-height:1.8;
+  max-width:780px;
+  margin:auto;
+}
+
+.hero-buttons{
+  margin-top:35px;
+
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:15px 28px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.btn-primary{
+  background:#2563eb;
+  color:white;
+}
+
+.btn-primary:hover{
+  background:#1d4ed8;
+  transform:translateY(-3px);
+}
+
+.btn-secondary{
+  background:white;
+  color:#0f172a;
+}
+
+.btn-secondary:hover{
+  transform:translateY(-3px);
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+  padding:90px 8%;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:50px;
+}
+
+.section-title h2{
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+.section-title p{
+  color:#64748b;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+}
+
+.stat-card{
+  background:white;
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
+
+  transition:0.3s;
+}
+
+.stat-card:hover{
+  transform:translateY(-5px);
+}
+
+.stat-card h4{
+  color:#64748b;
+  margin-bottom:10px;
+  font-size:14px;
+}
+
+.stat-card span{
+  font-size:36px;
+  font-weight:bold;
+  color:#2563eb;
+}
+
+.stat-card small{
+  display:block;
+  margin-top:10px;
+  color:#64748b;
+}
+
+/* =========================
+   CHART
+========================= */
+
+.chart-container{
+  margin-top:35px;
+
+  background:white;
+  border-radius:24px;
+  padding:30px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* =========================
+   LIVE INFO
+========================= */
+
+.live-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.live-card{
+  background:white;
+  border-radius:20px;
+  padding:25px;
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.live-card h3{
+  margin-bottom:10px;
+}
+
+.live-card p{
+  color:#64748b;
+  line-height:1.7;
+}
+
+/* =========================
+   ABOUT
+========================= */
+
+.about{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:50px;
+  align-items:center;
+}
+
+.about img{
+  width:100%;
+  border-radius:24px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.1);
+}
+
+.about-text h2{
+  font-size:42px;
+  margin-bottom:20px;
+}
+
+.about-text p{
+  line-height:1.9;
+  color:#475569;
+  margin-bottom:18px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+  background:#0f172a;
+  color:white;
+  padding:60px 8% 30px;
+}
+
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:40px;
+}
+
+/* =========================
+   FOOTER LOGO
+========================= */
+
+.footer-logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  overflow:visible;
+}
+
+.footer-logo img{
+
+  width:55px;
+  height:55px;
+
+  object-fit:contain;
+
+  transform:scale(1.7);
+
+  transform-origin:center;
+
+  border-radius:50%;
+}
+
+.footer-logo h2{
+  font-size:24px;
+}
+
+.footer-col p,
+.footer-col a{
+  color:#cbd5e1;
+  line-height:1.9;
+  text-decoration:none;
+  display:block;
+}
+
+.footer-col h3{
+  margin-bottom:15px;
+}
+
+.copyright{
+  text-align:center;
+  margin-top:40px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.1);
+  color:#94a3b8;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+  .stats-grid,
+  .live-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .about{
+    grid-template-columns:1fr;
+  }
+
+  .footer-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:48px;
+  }
+}
+
+@media(max-width:700px){
+
+  .nav-menu{
+    display:none;
+  }
+
+  .stats-grid,
+  .live-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero h1{
+    font-size:36px;
+  }
+
+  .section-title h2{
+    font-size:32px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+  <div class="logo">
+    <img src="img/logo.png">
+    <h2>PalmEstate</h2>
+  </div>
+
+  <div class="nav-menu">
+    <a href="#monitoring">Monitoring</a>
+    <a href="#informasi">Informasi</a>
+    <a href="#tentang">Tentang</a>
+
+    <a href="login.html" class="login-btn">
+      Login
+    </a>
+  </div>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <div class="hero-tag">
+      Smart Agriculture Monitoring System
+    </div>
+
+    <h1>
+      Monitoring Produksi Pertanian
+      <span>Real-Time</span>
+    </h1>
+
+    <p>
+      PalmEstate membantu monitoring hasil produksi harian,
+      evaluasi target, dan analisis efisiensi produksi
+      secara modern, cepat, dan terintegrasi.
+    </p>
+
+    <div class="hero-buttons">
+
+      <a href="#monitoring" class="btn btn-primary">
+        Lihat Monitoring
+      </a>
+
+      <a href="login.html" class="btn btn-secondary">
+        Masuk Dashboard
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- MONITORING -->
+
+<section class="section" id="monitoring">
+
+  <div class="section-title">
+    <h2>Monitoring Publik</h2>
+    <p>Update produksi terbaru yang dapat dilihat secara umum</p>
+  </div>
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <h4>Produksi Hari Ini</h4>
+      <span id="todayTotal">0</span>
+      <small>Total produksi harian</small>
+    </div>
+
+    <div class="stat-card">
+      <h4>Target Produksi</h4>
+      <span>1000</span>
+      <small>Target harian perusahaan</small>
+    </div>
+
+    <div class="stat-card">
+      <h4>Efisiensi</h4>
+      <span id="efisiensi">0%</span>
+      <small>Persentase pencapaian</small>
+    </div>
+
+    <div class="stat-card">
+      <h4>Status</h4>
+      <span id="status">Idle</span>
+      <small>Status operasional produksi</small>
+    </div>
+
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+
+</section>
+
+<!-- LIVE INFO -->
+
+<section class="section" id="informasi">
+
+  <div class="section-title">
+    <h2>Informasi Sistem</h2>
+    <p>Fitur dan keunggulan PalmEstate</p>
+  </div>
+
+  <div class="live-grid">
+
+    <div class="live-card">
+      <h3>Monitoring Real-Time</h3>
+      <p>
+        Data produksi diperbarui secara otomatis
+        sehingga monitoring menjadi lebih cepat
+        dan efisien.
+      </p>
+    </div>
+
+    <div class="live-card">
+      <h3>Analisis Efisiensi</h3>
+      <p>
+        Sistem membantu mengevaluasi pencapaian
+        target produksi harian secara terstruktur.
+      </p>
+    </div>
+
+    <div class="live-card">
+      <h3>Dashboard Interaktif</h3>
+      <p>
+        Menampilkan visualisasi data produksi
+        dalam bentuk grafik dan statistik modern.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section class="section" id="tentang">
+
+  <div class="about">
+
+    <img src="img/bg.jpg">
+
+    <div class="about-text">
+
+      <h2>Tentang PalmEstate</h2>
+
+      <p>
+        PalmEstate merupakan sistem monitoring produksi
+        berbasis web yang dikembangkan untuk mendukung
+        pengelolaan data produksi pertanian secara modern.
+      </p>
+
+      <p>
+        Sistem ini memungkinkan monitoring produksi,
+        evaluasi target, serta visualisasi data secara
+        real-time melalui dashboard interaktif.
+      </p>
+
+      <a href="login.html" class="btn btn-primary">
+        Login ke Sistem
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+
+  <div class="footer-grid">
+
+    <div class="footer-col">
+
+      <div class="footer-logo">
+        <img src="img/logo.png">
+        <h2>PalmEstate</h2>
+      </div>
+
+      <p>
+        Sistem monitoring produksi pertanian
+        berbasis web untuk meningkatkan efisiensi,
+        transparansi, dan pengelolaan data produksi.
+      </p>
+
+    </div>
+
+    <div class="footer-col">
+      <h3>Menu</h3>
+
+      <a href="#monitoring">Monitoring</a>
+      <a href="#informasi">Informasi</a>
+      <a href="#tentang">Tentang</a>
+    </div>
+
+    <div class="footer-col">
+      <h3>Kontak</h3>
+
+      <p>Universitas Lampung</p>
+      <p>Teknologi Industri Pertanian</p>
+      <p>Kelompok 1</p>
+    </div>
+
+  </div>
+
+  <div class="copyright">
+    © 2026 PalmEstate System 
+  </div>
+
+</footer>
+
+<script>
+
+const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
+
+let chart;
+
+async function loadData(){
+
+  try{
+
+    const res = await fetch(API);
+    const result = await res.json();
+
+    let data = result.map(d => ({
+      jumlah:Number(d.jumlah) || 0,
+      tanggal:String(d.tanggal).split('T')[0]
+    }));
+
+    render(data);
+
+  }catch(err){
+    console.log(err);
+  }
+}
+
+function render(data){
+
+  const target = 1000;
+
+  const today = new Date().toISOString().split('T')[0];
+
+  let hariIni = data.filter(d => d.tanggal === today);
+
+  let totalHariIni =
+    hariIni.reduce((a,b)=>a+b.jumlah,0);
+
+  let efisiensi =
+    ((totalHariIni/target)*100).toFixed(1);
+
+  document.getElementById('todayTotal').innerText =
+    totalHariIni + " kg";
+
+  document.getElementById('efisiensi').innerText =
+    efisiensi + "%";
+
+  document.getElementById('status').innerText =
+    totalHariIni > 0 ? "Running" : "Idle";
+
+  // =====================
+  // CHART
+  // =====================
+
+  let group = {};
+
+  for(let i=6;i>=0;i--){
+
+    let d = new Date();
+
+    d.setDate(d.getDate()-i);
+
+    let tgl = d.toISOString().split('T')[0];
+
+    group[tgl] = 0;
+  }
+
+  data.forEach(d=>{
+
+    if(group[d.tanggal] !== undefined){
+      group[d.tanggal] += d.jumlah;
+    }
+
+  });
+
+  let labels = Object.keys(group);
+  let values = Object.values(group);
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(document.getElementById('chart'),{
+
+    type:'line',
+
+    data:{
+      labels:labels,
+
+      datasets:[
+      {
+        label:'Produksi Harian',
+        data:values,
+        borderColor:'#2563eb',
+        backgroundColor:'#2563eb',
+        borderWidth:3,
+        tension:0.4,
+        fill:false
+      },
+      {
+        label:'Target Harian',
+        data:labels.map(()=>target),
+        borderColor:'#f59e0b',
+        borderDash:[5,5],
+        borderWidth:2,
+        pointRadius:0
+      }
+      ]
+    },
+
+    options:{
+      responsive:true,
+
+      plugins:{
+        legend:{
+          display:true
+        }
+      }
+    }
+
+  });
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
