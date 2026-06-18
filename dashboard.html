@@ -378,6 +378,10 @@ tr:hover{
 #chart{
   max-height:320px;
 }
+.chart-container{
+  width:100%;
+  height:320px;
+}
 
 /* 📱 RESPONSIVE */
 @media(max-width:900px){
@@ -836,125 +840,82 @@ tr:hover{
   letter-spacing:1px;
 }
 /* =========================
-   SUPPLIER CARD
+   SUPPLIER PROFILE CARD
 ========================= */
 
 .supplier-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:20px;
 }
 
 .supplier-card{
-
   background:white;
-
-  border-radius:18px;
-
-  padding:18px;
-
-  border-left:5px solid #2563eb;
-
-  box-shadow:0 8px 25px rgba(0,0,0,0.08);
-
-  transition:0.3s;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(255, 252, 252, 0.08);
+  transition:.3s;
 }
 
 .supplier-card:hover{
-  transform:translateY(-4px);
+  transform:translateY(-5px);
 }
 
-.supplier-header{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-  margin-bottom:12px;
+.supplier-top{
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  color:white;
+  padding:20px;
 }
 
-.supplier-title{
-
-  font-size:18px;
-
-  font-weight:600;
-
-  color:#1e293b;
+.supplier-top h3{
+  margin:0;
+  font-size:20px;
+}
+.supplier-top h3{
+  color:#ffffff;
+  font-size:22px;
+  font-weight:700;
+  text-shadow:0 0 10px rgba(255,255,255,0.5);
 }
 
-.supplier-badge{
-
-  background:#dbeafe;
-
-  color:#2563eb;
-
-  padding:5px 12px;
-
-  border-radius:20px;
-
-  font-size:12px;
-
-  font-weight:600;
-}
-
-.supplier-info{
-
-  display:grid;
-
-  grid-template-columns:1fr;
-
-  gap:8px;
-}
-
-.info-row{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-  border-bottom:1px solid #f1f5f9;
-
-  padding-bottom:6px;
-}
-
-.info-label{
-  color:#64748b;
+.supplier-top span{
   font-size:13px;
+  opacity:.9;
 }
 
-.info-value{
-  font-weight:500;
-  color:#0f172a;
-  text-align:right;
+.supplier-body{
+  padding:18px;
 }
 
-.supplier-action{
-
-  margin-top:15px;
-
+.supplier-item{
   display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #e2e8f0;
+}
 
+.supplier-item:last-child{
+  border-bottom:none;
+}
+
+.supplier-label{
+  color:#64748b;
+}
+
+.supplier-value{
+  font-weight:600;
+  color:#0f172a;
+}
+
+.supplier-footer{
+  display:flex;
   gap:10px;
+  padding:18px;
+  background:#f8fafc;
 }
 
-.btn-edit{
-  background:#2563eb;
-}
-
-.btn-edit:hover{
-  background:#1d4ed8;
-}
-
-.btn-delete{
-  background:#ef4444;
-}
-
-.btn-delete:hover{
-  background:#dc2626;
+.supplier-footer button{
+  flex:1;
 }
 </style>
 </head>
@@ -1055,7 +1016,9 @@ tr:hover{
 
   <h3>Grafik Produksi 7 Hari Terakhir</h3>
 
+  <div class="chart-container">
   <canvas id="chart7hari"></canvas>
+</div>
 
 </div>
 <div class="card">
@@ -1079,33 +1042,43 @@ tr:hover{
 
 
 <div id="pemasok" style="display:none">
+
   <div class="card">
     <h3>Data Pemasok</h3>
 
-<input id="kebun" placeholder="Nama Kebun">
+    <input id="kebun" placeholder="Nama Kebun">
 
-<input id="alamat" placeholder="Alamat">
+    <input id="alamat" placeholder="Alamat">
 
-<input id="kontak" placeholder="No Kontak">
+    <input id="kontak" placeholder="No Kontak">
 
-<input id="jumlah" type="number" placeholder="Jumlah TBS (Kg)">
+    <input id="jumlah" type="number" placeholder="Jumlah TBS (Kg)">
 
-<input id="supir" placeholder="Nama Supir">
+    <input id="supir" placeholder="Nama Supir">
 
-<input id="plat" placeholder="No Plat">
+    <input id="plat" placeholder="No Plat">
 
-<input id="muatan" placeholder="Muatan Logistik">
+    <input id="muatan" placeholder="Muatan Logistik">
 
-<input
-  type="datetime-local"
-  id="tanggal"
-  placeholder="Waktu Penerimaan"
->
+    <input type="datetime-local" id="tanggal">
 
     <button onclick="simpan()">Simpan</button>
-  </div>
-</div>
 
+  </div>
+
+
+  <div class="card">
+
+    <h3>Informasi Pemasok</h3>
+
+    <div id="supplierCards" class="supplier-grid">
+
+    </div>
+
+  </div>
+
+
+</div>
 <div id="monitoring" style="display:none">
   <div class="card">
     <h3>Data Pemasok</h3>
@@ -1137,14 +1110,6 @@ tr:hover{
     </thead>
     <tbody id="rekap"></tbody>
   </table>
-</div>
-<div class="card">
-  <h3>Informasi Pemasok</h3>
-
-  <div id="supplierCards" class="supplier-grid">
-    <!-- otomatis dari javascript -->
-  </div>
-
 </div>
 </div>
 <div id="about" style="display:none">
@@ -1301,7 +1266,23 @@ function show(id, el = null){
 
   // 🔼 tampilkan section yang dipilih
   const activeSection = document.getElementById(id);
-  if(activeSection) activeSection.style.display = 'block';
+  if(activeSection){
+
+  activeSection.style.display = 'block';
+
+
+  // refresh chart ketika dashboard dibuka
+  if(id === 'dashboard'){
+
+    setTimeout(()=>{
+
+      render();
+
+    },300);
+
+  }
+
+}
 
   // 🎯 aktifkan menu sidebar
   document.querySelectorAll('.sidebar a').forEach(a=>{
@@ -1335,38 +1316,52 @@ if(role === "operator"){
 }
 // 📥 LOAD DATA
 async function loadData(){
-  try{
-    const res = await fetch(API);
-    const result = await res.json();
 
-   data = result.map(d => ({
+try{
 
-  id:d.id,
+const res = await fetch(
+ API + "?t=" + new Date().getTime()
+);
 
-  kebun:d.kebun || '-',
+const result = await res.json();
 
-  alamat:d.alamat || '-',
 
-  kontak:d.kontak || '-',
+data=result.map(d=>({
 
-  jumlah:Number(d.jumlah) || 0,
+id:d.id,
 
-  supir:d.supir || '-',
+kebun:d.kebun || '-',
 
-  plat:d.plat || '-',
+alamat:d.alamat || '-',
 
-  muatan:d.muatan || '-',
+kontak:d.kontak || '-',
 
-  tanggal:d.tanggal || '-'
+jumlah:Number(d.jumlah)||0,
+
+supir:d.supir||'-',
+
+plat:d.plat||'-',
+
+muatan:d.muatan||'-',
+
+tanggal:d.tanggal||''
+
 }));
 
-    render(); // ONLY ONE RENDER HERE
 
-  } catch(err){
-    console.error(err);
-  }
-  //Dropdown
+initFilterBulanTahun();
+
+render();
+
+
+}catch(err){
+
+console.error(err);
+
 }
+
+}
+//dropdown
 function initFilterBulanTahun(){
 
   const bulanSelect =
@@ -1422,6 +1417,37 @@ function initFilterBulanTahun(){
 
   tahunSelect.value =
     tahunSekarang;
+}
+function formatTanggalLokal(date){
+
+  const tahun = date.getFullYear();
+
+  const bulan = String(
+    date.getMonth()+1
+  ).padStart(2,'0');
+
+  const hari = String(
+    date.getDate()
+  ).padStart(2,'0');
+
+  return `${tahun}-${bulan}-${hari}`;
+
+}
+
+
+// normalisasi tanggal dari Google Sheet
+function normalisasiTanggal(tanggal){
+
+  if(!tanggal) return '';
+
+  let d = new Date(tanggal);
+
+  if(isNaN(d)){
+    return String(tanggal).substring(0,10);
+  }
+
+  return formatTanggalLokal(d);
+
 }
 // ✏️ EDIT DATA (GLOBAL - FIX ERROR)
 function editData(id){
@@ -1532,7 +1558,7 @@ document.getElementById('muatan').value = '';
 document.getElementById('tanggal').value = '';
 
   await loadData();
-render();
+  render();
 }
 
 // ❌ HAPUS
@@ -1548,6 +1574,7 @@ async function hapus(id){
 render();
 }
 
+
 // 🎨 RENDER
 function render(){
 
@@ -1556,15 +1583,25 @@ function render(){
 
 
   // 📅 ambil tanggal hari ini
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatTanggalLokal(new Date());
 
   // 📅 ambil 7 hari terakhir
-  let last7Days = [];
-  for(let i=6;i>=0;i--){
-    let d = new Date();
-    d.setDate(d.getDate() - i);
-    last7Days.push(d.toISOString().split('T')[0]);
-  }
+ let last7Days=[];
+
+
+for(let i=6;i>=0;i--){
+
+ let d=new Date();
+
+ d.setDate(
+ d.getDate()-i
+ );
+
+ last7Days.push(
+ formatTanggalLokal(d)
+ );
+
+}
 
   // 🟢 FILTER DATA 7 HARI
   let data7hari = data.filter(d => {
@@ -1576,16 +1613,20 @@ function render(){
 // =========================
 
 // data hari ini
-let dataHariIni = data.filter(d => {
+let dataHariIni = data.filter(d=>{
 
   if(!d.tanggal) return false;
 
-  return String(d.tanggal).split('T')[0] === today;
+  return d.tanggal.substring(0,10) === today;
 
 });
 
 // total produksi hari ini
-let totalHariIni = dataHariIni.reduce((a,b)=>a+b.jumlah,0);
+let totalHariIni =
+dataHariIni.reduce(
+(a,b)=>a+Number(b.jumlah || 0),
+0
+);
 
 // target harian
 const targetEl = document.getElementById('target');
@@ -1728,48 +1769,41 @@ supplierHTML += `
 
 <div class="supplier-card">
 
-  <div class="supplier-header">
+  <div class="supplier-top">
+    <h3>${d.kebun}</h3>
+    <span>${d.jumlah.toLocaleString()} Kg TBS</span>
+  </div>
 
-    <div class="supplier-title">
-      ${d.kebun}
+  <div class="supplier-body">
+
+    <div class="supplier-item">
+      <span class="supplier-label">🚛 Supir</span>
+      <span class="supplier-value">${d.supir}</span>
     </div>
 
-    <div class="supplier-badge">
-      ${d.jumlah} Kg
+    <div class="supplier-item">
+      <span class="supplier-label">🚗 Plat</span>
+      <span class="supplier-value">${d.plat}</span>
+    </div>
+
+    <div class="supplier-item">
+      <span class="supplier-label">📞 Kontak</span>
+      <span class="supplier-value">${d.kontak}</span>
+    </div>
+
+    <div class="supplier-item">
+      <span class="supplier-label">📦 Muatan</span>
+      <span class="supplier-value">${d.muatan}</span>
+    </div>
+
+    <div class="supplier-item">
+      <span class="supplier-label">🕒 Masuk</span>
+      <span class="supplier-value">${d.tanggal}</span>
     </div>
 
   </div>
 
-  <div class="supplier-info">
-
-    <div class="info-row">
-      <span class="info-label">No Plat</span>
-      <span class="info-value">${d.plat}</span>
-    </div>
-
-    <div class="info-row">
-      <span class="info-label">Supir</span>
-      <span class="info-value">${d.supir}</span>
-    </div>
-
-    <div class="info-row">
-      <span class="info-label">Kontak</span>
-      <span class="info-value">${d.kontak}</span>
-    </div>
-    
-    <div class="info-row">
-      <span class="info-label">Muatan</span>
-      <span class="info-value">${d.muatan}</span>
-    </div>
-
-    <div class="info-row">
-      <span class="info-label">Waktu Masuk</span>
-      <span class="info-value">${d.tanggal}</span>
-    </div>
-
-  </div>
-
-  <div class="supplier-action">
+  <div class="supplier-footer">
 
     <button
       class="btn-edit"
@@ -1884,7 +1918,7 @@ for(let i = 1; i <= jumlahHariBulan; i++){
       if(!d.tanggal) return false;
 
       const tgl =
-        String(d.tanggal).split('T')[0];
+d.tanggal.substring(0,10);
 
       return tgl === tanggalCari;
 
@@ -1983,7 +2017,6 @@ chart = new Chart(
 // =========================
 // 📈 GRAFIK 7 HARI TERAKHIR
 // =========================
-
 // ambil 7 hari terakhir
 let labels7 = [];
 let values7 = [];
@@ -1992,42 +2025,52 @@ for(let i = 6; i >= 0; i--){
 
   let d = new Date();
 
-  d.setDate(d.getDate() - i);
+  d.setHours(0,0,0,0);
+
+  d.setDate(
+    d.getDate()-i
+  );
+
 
   let tanggal =
-    d.toISOString().split('T')[0];
+    formatTanggalLokal(d);
+
 
   labels7.push(
     tanggal.substring(5) // MM-DD
   );
 
   let total = data
-    .filter(x => {
+.filter(x=>{
 
-      if(!x.tanggal) return false;
+return normalisasiTanggal(x.tanggal) === tanggal;
 
-      return String(x.tanggal)
-      .split('T')[0] === tanggal;
-
-    })
-    .reduce((a,b)=>
-      a + Number(b.jumlah),0);
+})
+.reduce((a,b)=>
+a + Number(b.jumlah || 0),0);
 
   values7.push(total);
 }
 
 // hapus chart lama
 if(chart7hari){
+
   chart7hari.destroy();
+
+  chart7hari=null;
+
 }
 
 // gradient hasil produksi
-const ctx7 =
+const canvas7 =
 document.getElementById('chart7hari');
 
+if(!canvas7) return;
+
+const ctx7 = canvas7.getContext('2d');
+
 const gradientProduksi =
-ctx7.getContext('2d')
-.createLinearGradient(
+ctx7.createLinearGradient(
   0,0,0,300
 );
 
@@ -2043,8 +2086,7 @@ gradientProduksi.addColorStop(
 
 // gradient target
 const gradientTarget =
-ctx7.getContext('2d')
-.createLinearGradient(
+ctx7.createLinearGradient(
   0,0,0,300
 );
 
@@ -2113,7 +2155,11 @@ chart7hari = new Chart(ctx7,{
   },
 
   options:{
+    devicePixelRatio: 2,
+
     responsive:true,
+
+    maintainAspectRatio:false,
 
     interaction:{
       mode:'index',
@@ -2134,22 +2180,42 @@ chart7hari = new Chart(ctx7,{
 
     scales:{
 
-      x:{
-        title:{
-          display:true,
-          text:'Tanggal'
-        }
-      },
+  x:{
+    ticks:{
+      font:{
+        size:14
+      }
+    },
 
-      y:{
-        beginAtZero:true,
-
-        title:{
-          display:true,
-          text:'Produksi (kg)'
-        }
+    title:{
+      display:true,
+      text:'Tanggal',
+      font:{
+        size:15,
+        weight:'bold'
       }
     }
+  },
+
+  y:{
+    beginAtZero:true,
+
+    ticks:{
+      font:{
+        size:14
+      }
+    },
+
+    title:{
+      display:true,
+      text:'Produksi (kg)',
+      font:{
+        size:15,
+        weight:'bold'
+      }
+    }
+  }
+}
   }
 });
 }
@@ -2194,6 +2260,11 @@ const interval = setInterval(()=>{
     Math.floor(progress) + '%';
 
 },180);
+setInterval(()=>{
+
+loadData();
+
+},30000);
 
 </script>
 
