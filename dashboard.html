@@ -1099,12 +1099,12 @@ tr:hover{
     </table>
   </div>
       <div class="card">
-  <h3>Rekap Produksi Harian</h3>
+  <h3>Rekap TBS Harian</h3>
   <table>
     <thead>
       <tr>
         <th>Tanggal</th>
-        <th>Total Produksi</th>
+        <th>Jumlah TBS</th>
         <th>Status</th>
       </tr>
     </thead>
@@ -1227,7 +1227,7 @@ if(!sessionStorage.getItem("user")){
 }
 
 // 🔗 API Google Sheets (SheetDB)
-const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
+const API = "https://sheetdb.io/api/v1/e9w3n4ozmno6b";
 
 // ✅ GLOBAL VARIABLE
 let data = [];
@@ -1440,13 +1440,12 @@ function normalisasiTanggal(tanggal){
 
   if(!tanggal) return '';
 
-  let d = new Date(tanggal);
+  let str = String(tanggal);
 
-  if(isNaN(d)){
-    return String(tanggal).substring(0,10);
-  }
+  // ambil tanggal sebelum T atau spasi
+  let hasil = str.split('T')[0].split(' ')[0];
 
-  return formatTanggalLokal(d);
+  return hasil;
 
 }
 // ✏️ EDIT DATA (GLOBAL - FIX ERROR)
@@ -1532,16 +1531,16 @@ document.getElementById('muatan').value,
   } else {
 
     // ✅ INSERT
-    await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        data:[{
-          id: Date.now(),
-          ...payload
-        }]
-      })
-    });
+   await fetch(API,{
+  method:'POST',
+  headers:{
+    'Content-Type':'application/json'
+  },
+  body: JSON.stringify({
+    id: Date.now(),
+    ...payload
+  })
+});
 
     notif("Data berhasil ditambahkan");
   }
@@ -1828,54 +1827,128 @@ supplierHTML += `
 document.getElementById('supplierCards').innerHTML =
 supplierHTML;
 // =========================
-// 📊 REKAP HARIAN (SORTED FIX)
+// 📊 REKAP TBS HARIAN FIX
 // =========================
-
-
 
 let rekap = {};
 
-// grouping per tanggal
+// grouping berdasarkan tanggal saja
 data.forEach(d => {
-  let jumlah = Number(d.jumlah) || 0; // 🔥 pastikan angka
-  let tanggalOnly =
-  String(d.tanggal).split('T')[0];
 
-if(!rekap[tanggalOnly]){
-  rekap[tanggalOnly] = 0;
-}
+  let jumlah = Number(d.jumlah) || 0;
 
-rekap[tanggalOnly] += jumlah;
+  // normalisasi tanggal
+  let tanggalOnly = normalisasiTanggal(d.tanggal);
+
+
+  if(!tanggalOnly){
+    return;
+  }
+
+
+  // jika tanggal sudah ada, tambahkan jumlah
+  if(rekap[tanggalOnly]){
+
+    rekap[tanggalOnly] += jumlah;
+
+  }else{
+
+    rekap[tanggalOnly] = jumlah;
+
+  }
+
 });
 
-// ubah object ke array
-let rekapArray = Object.entries(rekap).map(([tgl, total]) => ({
-  tanggal: tgl,
-  total: Number(total) // 🔥 pastikan angka
+
+// ubah object menjadi array
+let rekapArray = Object.keys(rekap).map(tgl=>({
+
+  tanggal:tgl,
+
+  total:rekap[tgl]
+
 }));
 
-// urutkan tanggal
-rekapArray.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
-// tampilkan
-let htmlRekap = '';
+// urutkan berdasarkan tanggal
+rekapArray.sort((a,b)=>{
 
-rekapArray.forEach(item => {
+  return new Date(a.tanggal)-new Date(b.tanggal);
 
-  let status = item.total >= targetHarian ? 'Tercapai' : 'Tidak Tercapai';
-  let warnaClass = item.total >= targetHarian ? 'hijau' : 'merah';
-
-  htmlRekap += `
-<tr>
-  <td>${item.tanggal}</td>
-  <td>${item.total}</td>
-  <td>
-    <span class="${warnaClass}">${status}</span>
-  </td>
-</tr>`;
 });
 
-document.getElementById('rekap').innerHTML = htmlRekap;
+
+// tampilkan tabel
+let htmlRekap = "";
+
+
+if(rekapArray.length===0){
+
+htmlRekap = `
+<tr>
+<td colspan="3">
+Belum ada data
+</td>
+</tr>
+`;
+
+}else{
+
+
+rekapArray.forEach(item=>{
+
+
+let status =
+item.total >= targetHarian
+?
+"Tercapai"
+:
+"Tidak Tercapai";
+
+
+let warnaClass =
+item.total >= targetHarian
+?
+"hijau"
+:
+"merah";
+
+
+htmlRekap += `
+
+<tr>
+
+<td>
+${item.tanggal}
+</td>
+
+
+<td>
+${item.total.toLocaleString('id-ID')} Kg
+</td>
+
+
+<td>
+
+<span class="${warnaClass}">
+${status}
+</span>
+
+</td>
+
+
+</tr>
+
+`;
+
+});
+
+
+}
+
+
+document.getElementById('rekap').innerHTML =
+htmlRekap;
   // =========================
 // 📈 GRAFIK BULAN AKTIF
 // =========================
