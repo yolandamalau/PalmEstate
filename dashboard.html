@@ -1093,7 +1093,6 @@ tr:hover{
 <input id="supir" placeholder="Nama Supir">
 
 <input id="plat" placeholder="No Plat">
-<input id="tujuan" placeholder="Tujuan Pengiriman">
 
 <input id="muatan" placeholder="Muatan Logistik">
 
@@ -1356,8 +1355,6 @@ async function loadData(){
 
   plat:d.plat || '-',
 
-  tujuan:d.tujuan || '-',
-
   muatan:d.muatan || '-',
 
   tanggal:d.tanggal || '-'
@@ -1449,8 +1446,6 @@ document.getElementById('jumlah').value = d.jumlah;
 document.getElementById('supir').value = d.supir;
 
 document.getElementById('plat').value = d.plat;
-document.getElementById('tujuan').value =
-d.tujuan || '';
 
 document.getElementById('muatan').value =
 d.muatan || '';
@@ -1484,8 +1479,6 @@ async function simpan(){
 
   plat:
   document.getElementById('plat').value,
-  tujuan:
-document.getElementById('tujuan').value,
 
 muatan:
 document.getElementById('muatan').value,
@@ -1534,7 +1527,6 @@ document.getElementById('kontak').value = '';
 document.getElementById('jumlah').value = '';
 document.getElementById('supir').value = '';
 document.getElementById('plat').value = '';
-document.getElementById('tujuan').value = '';
 
 document.getElementById('muatan').value = '';
 document.getElementById('tanggal').value = '';
@@ -1764,12 +1756,7 @@ supplierHTML += `
       <span class="info-label">Kontak</span>
       <span class="info-value">${d.kontak}</span>
     </div>
-
-    <div class="info-row">
-      <span class="info-label">Tujuan</span>
-      <span class="info-value">${d.tujuan}</span>
-    </div>
-
+    
     <div class="info-row">
       <span class="info-label">Muatan</span>
       <span class="info-value">${d.muatan}</span>
