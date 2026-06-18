@@ -1324,6 +1324,7 @@ const res = await fetch(
 );
 
 const result = await res.json();
+console.log("DATA SHEETDB:", result);
 
 
 data=result.map(d=>({
@@ -1338,7 +1339,11 @@ kontak:d.kontak || '-',
 
 jumlah:Number(d.jumlah)||0,
 
-supir:d.supir||'-',
+supir:
+d.supir ||
+d.Supir ||
+d.nama_supir ||
+'-',
 
 plat:d.plat||'-',
 
@@ -1513,6 +1518,7 @@ document.getElementById('muatan').value,
 };
 
   console.log("MODE:", editId ? "UPDATE" : "INSERT");
+console.log("DATA KIRIM:", payload);
 
   if(editId){
 
@@ -1537,9 +1543,18 @@ document.getElementById('muatan').value,
     'Content-Type':'application/json'
   },
   body: JSON.stringify({
+  data:{
     id: Date.now(),
-    ...payload
-  })
+    kebun: payload.kebun,
+    alamat: payload.alamat,
+    kontak: payload.kontak,
+    jumlah: payload.jumlah,
+    supir: payload.supir,
+    plat: payload.plat,
+    muatan: payload.muatan,
+    tanggal: payload.tanggal
+  }
+})
 });
 
     notif("Data berhasil ditambahkan");
