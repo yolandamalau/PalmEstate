@@ -407,7 +407,34 @@ footer{
   border-top:1px solid rgba(255,255,255,0.1);
   color:#94a3b8;
 }
+.status-tercapai{
 
+background:#22c55e;
+
+color:white;
+
+padding:8px 15px;
+
+border-radius:20px;
+
+font-size:14px;
+
+}
+
+
+.status-belum{
+
+background:#ef4444;
+
+color:white;
+
+padding:8px 15px;
+
+border-radius:20px;
+
+font-size:14px;
+
+}
 /* =========================
    RESPONSIVE
 ========================= */
@@ -489,7 +516,7 @@ footer{
     </div>
 
     <h1>
-      Monitoring Produksi Pertanian
+      Monitoring Target Bahan Baku harian TBS
       <span>Real-Time</span>
     </h1>
 
@@ -532,11 +559,11 @@ footer{
       <small>Total produksi harian</small>
     </div>
 
-    <div class="stat-card">
-      <h4>Target Produksi</h4>
-      <span>1000</span>
-      <small>Target harian perusahaan</small>
-    </div>
+   <div class="stat-card">
+  <h4>Target Produksi</h4>
+  <span id="target">0</span>
+  <small>Target harian perusahaan</small>
+</div>
 
     <div class="stat-card">
       <h4>Efisiensi</h4>
@@ -683,121 +710,331 @@ const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
 
 let chart;
 
+
+function formatTanggalLokal(date){
+
+  const tahun = date.getFullYear();
+
+  const bulan = String(date.getMonth()+1).padStart(2,'0');
+
+  const hari = String(date.getDate()).padStart(2,'0');
+
+  return `${tahun}-${bulan}-${hari}`;
+
+}
+
+
+
 async function loadData(){
 
-  try{
+try{
 
-    const res = await fetch(API);
-    const result = await res.json();
+const res = await fetch(
+API + "?t=" + new Date().getTime()
+);
 
-    let data = result.map(d => ({
-      jumlah:Number(d.jumlah) || 0,
-      tanggal:String(d.tanggal).split('T')[0]
-    }));
+const result = await res.json();
 
-    render(data);
 
-  }catch(err){
-    console.log(err);
-  }
+let data = result.map(d=>({
+
+jumlah:Number(d.jumlah)||0,
+
+tanggal:String(d.tanggal || '').substring(0,10)
+
+}));
+
+
+render(data);
+
+
+}catch(err){
+
+console.log(err);
+
 }
+
+}
+
+
+
 
 function render(data){
 
-  const target = 1000;
 
-  const today = new Date().toISOString().split('T')[0];
+const targetHarian = 900000;
+document.getElementById("target").innerText =
+targetHarian.toLocaleString('id-ID') + " kg";
 
-  let hariIni = data.filter(d => d.tanggal === today);
 
-  let totalHariIni =
-    hariIni.reduce((a,b)=>a+b.jumlah,0);
+// ======================
+// DATA HARI INI
+// ======================
 
-  let efisiensi =
-    ((totalHariIni/target)*100).toFixed(1);
+const today =
+formatTanggalLokal(new Date());
 
-  document.getElementById('todayTotal').innerText =
-    totalHariIni + " kg";
 
-  document.getElementById('efisiensi').innerText =
-    efisiensi + "%";
+let hariIni=data.filter(d=>
 
-  document.getElementById('status').innerText =
-    totalHariIni > 0 ? "Running" : "Idle";
+d.tanggal===today
 
-  // =====================
-  // CHART
-  // =====================
+);
 
-  let group = {};
 
-  for(let i=6;i>=0;i--){
 
-    let d = new Date();
+let totalHariIni =
+hariIni.reduce(
+(a,b)=>a+b.jumlah,
+0
+);
 
-    d.setDate(d.getDate()-i);
 
-    let tgl = d.toISOString().split('T')[0];
 
-    group[tgl] = 0;
-  }
+let efisiensi =
+(
+(totalHariIni/targetHarian)*100
+).toFixed(1);
 
-  data.forEach(d=>{
 
-    if(group[d.tanggal] !== undefined){
-      group[d.tanggal] += d.jumlah;
-    }
 
-  });
+// KPI INDEX
 
-  let labels = Object.keys(group);
-  let values = Object.values(group);
+document.getElementById(
+"todayTotal"
+).innerText =
+totalHariIni.toLocaleString('id-ID')+" kg";
 
-  if(chart) chart.destroy();
 
-  chart = new Chart(document.getElementById('chart'),{
+document.getElementById(
+"efisiensi"
+).innerText =
+efisiensi+"%";
 
-    type:'line',
 
-    data:{
-      labels:labels,
 
-      datasets:[
-      {
-        label:'Produksi Harian',
-        data:values,
-        borderColor:'#2563eb',
-        backgroundColor:'#2563eb',
-        borderWidth:3,
-        tension:0.4,
-        fill:false
-      },
-      {
-        label:'Target Harian',
-        data:labels.map(()=>target),
-        borderColor:'#f59e0b',
-        borderDash:[5,5],
-        borderWidth:2,
-        pointRadius:0
-      }
-      ]
-    },
+const status =
+document.getElementById("status");
 
-    options:{
-      responsive:true,
 
-      plugins:{
-        legend:{
-          display:true
-        }
-      }
-    }
+if(totalHariIni >= targetHarian){
 
-  });
+status.innerHTML =
+`
+<span class="status-tercapai">
+Tercapai
+</span>
+`;
 
 }
 
+else{
+
+status.innerHTML =
+`
+<span class="status-belum">
+Belum Tercapai
+</span>
+`;
+
+}
+
+
+
+
+
+// ======================
+// GRAFIK 7 HARI
+// ======================
+
+
+let labels=[];
+
+let values=[];
+
+
+
+for(let i=6;i>=0;i--){
+
+
+let d=new Date();
+
+
+d.setDate(
+d.getDate()-i
+);
+
+
+
+let tanggal =
+formatTanggalLokal(d);
+
+
+
+labels.push(
+tanggal.substring(5)
+);
+
+
+
+let total =
+data.filter(x=>
+
+x.tanggal===tanggal
+
+)
+
+.reduce(
+(a,b)=>a+b.jumlah,
+0
+);
+
+
+
+values.push(total);
+
+
+}
+
+
+
+
+if(chart){
+
+chart.destroy();
+
+}
+
+
+
+chart =
+new Chart(
+document.getElementById('chart'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:labels,
+
+
+datasets:[
+
+{
+
+label:'Produksi Aktual',
+
+data:values,
+
+borderColor:'#2563eb',
+
+backgroundColor:
+'rgba(37,99,235,0.2)',
+
+borderWidth:3,
+
+tension:0.4,
+
+fill:true
+
+},
+
+
+{
+
+label:'Target Harian',
+
+data:
+labels.map(
+()=>targetHarian
+),
+
+borderColor:'#f59e0b',
+
+borderDash:[5,5],
+
+borderWidth:2,
+
+pointRadius:0
+
+}
+
+]
+
+},
+
+
+
+options:{
+
+
+responsive:true,
+
+
+plugins:{
+
+
+legend:{
+display:true
+},
+
+
+title:{
+
+display:true,
+
+text:
+"Produksi 7 Hari Terakhir"
+
+}
+
+
+},
+
+
+scales:{
+
+
+y:{
+
+beginAtZero:true,
+
+title:{
+
+display:true,
+
+text:"Produksi (kg)"
+
+}
+
+}
+
+}
+
+
+}
+
+
+
+});
+
+}
+
+
+
 loadData();
+
+
+setInterval(()=>{
+
+loadData();
+
+},30000);
 
 </script>
 
