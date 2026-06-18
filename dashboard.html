@@ -282,16 +282,35 @@ body{
 #status{color:#f59e0b;}
 
 /* 📝 INPUT */
-input, select{
+input{
   width:100%;
   padding:12px;
   border-radius:10px;
   border:1px solid #ddd;
   margin-bottom:12px;
   font-size:14px;
-  transition:0.2s;
 }
 
+#input select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:12px;
+  font-size:14px;
+}
+#filterBulan,
+#filterTahun{
+  width:auto;
+  min-width:140px;
+  margin-bottom:0;
+}
+.chart-filter{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
 input:focus, select:focus{
   border-color:#2563eb;
   outline:none;
@@ -864,7 +883,7 @@ tr:hover{
 </div>
 
   <a onclick="show('dashboard', this)">Dashboard</a>
-  <a onclick="show('input', this)" id="menuInput">Input</a>
+  <a onclick="show('pemasok', this)" id="menuPemasok">Data Pemasok</a>
   <a onclick="show('monitoring', this)" id="menuMonitoring">Monitoring</a>
   <a onclick="show('about', this)">About Us</a>
 
@@ -888,52 +907,69 @@ tr:hover{
   <div class="grid-kecil">
 
   <div class="card kecil">
-    <h4>Produksi Hari Ini</h4>
+    <h4>Input Hari Ini</h4>
     <p><b id="todayTotal">0</b> kg</p>
     <small id="todayPercent">0% dari target</small>
   </div>
 
   <div class="card kecil">
-    <h4>Produksi Tertinggi</h4>
+    <h4>Input TBS Tertinggi</h4>
     <p><b id="maxProd">0</b> kg</p>
     <small id="maxDate">-</small>
   </div>
 
   <div class="card kecil">
-    <h4>Produksi Terendah</h4>
+    <h4>Input TBS Terendah</h4>
     <p><b id="minProd">0</b> kg</p>
     <small id="minDate">-</small>
   </div>
 
 </div>
 <div class="card">
-  <h3>Produksi Hari Ini</h3>
+  <h3>Input Hari Ini</h3>
   <p>Realisasi: <b id="todayReal">0</b> kg</p>
   <p>Efisiensi: <b id="todayEf">0%</b></p>
 </div>
+<div class="card">
 
-  <div class="card">
-    <canvas id="chart"></canvas>
+  <h3>Grafik Produksi Bulanan</h3>
+
+  <div style="display:flex; gap:10px; margin-bottom:15px;">
+
+    <select id="filterBulan" onchange="render()"></select>
+
+    <select id="filterTahun" onchange="render()"></select>
+
   </div>
+
+  <canvas id="chart"></canvas>
+
 </div>
 
-<div id="input" style="display:none">
+</div> <!-- penutup dashboard -->
+
+
+<div id="pemasok" style="display:none">
   <div class="card">
-    <h3>Input Produksi</h3>
+    <h3>Data Pemasok</h3>
 
-    <input id="kebun" placeholder="Kebun">
-    <input id="produk" placeholder="Produk">
-    <input id="jumlah" type="number" placeholder="Jumlah Produksi">
+<input id="kebun" placeholder="Nama Kebun">
 
-    <select id="shift">
-      <option value="pagi">pagi</option>
-      <option value="siang">siang</option>
-      <option value="malam">malam</option>
-    </select>
+<input id="alamat" placeholder="Alamat">
 
-    <input type="date" id="tanggal">
+<input id="kontak" placeholder="No Kontak">
 
-    <input id="keterangan" placeholder="Keterangan">
+<input id="jumlah" type="number" placeholder="Jumlah TBS (Kg)">
+
+<input id="supir" placeholder="Nama Supir">
+
+<input id="plat" placeholder="No Plat">
+
+<input
+  type="datetime-local"
+  id="tanggal"
+  placeholder="Waktu Penerimaan"
+>
 
     <button onclick="simpan()">Simpan</button>
   </div>
@@ -945,12 +981,13 @@ tr:hover{
     <table width="100%">
       <thead>
 <tr>
-  <th>Kebun</th>
-  <th>Produk</th>
-  <th>Jumlah</th>
-  <th>Shift</th>
-  <th>Tanggal</th>
-  <th>Keterangan</th>
+  <th>Nama Kebun</th>
+  <th>Alamat</th>
+  <th>No Kontak</th>
+  <th>Jumlah TBS</th>
+  <th>Nama Supir</th>
+  <th>No Plat</th>
+  <th>Waktu Penerimaan</th>
   <th>Aksi</th>
 </tr>
 </thead>
@@ -982,8 +1019,8 @@ tr:hover{
   <div class="card">
     <h3>Profil Perusahaan</h3>
     <p>
-      PalmEstate adalah sistem monitoring produksi berbasis web yang digunakan
-      untuk memantau hasil produksi harian, efisiensi kerja, serta analisis
+      PalmEstate adalah sistem monitoring bahan baku berbasis web yang digunakan
+      untuk memantau input bahan baku harian, efisiensi kerja, serta analisis
       target produksi secara real-time dan terstruktur.
     </p>
   </div>
@@ -1037,19 +1074,17 @@ tr:hover{
   </div>
 
   <div class="erp-card">
-    <div class="erp-avatar">
-      <img src="img/septia.jpeg">
-    </div>
-    <div class="erp-info">
-      <h4>Septia Sari Naningrum</h4>
-      <p>2314231059</p>
-      
-    </div>
-    
+  <div class="erp-avatar">
+    <img src="img/septia.jpeg">
+  </div>
+
+  <div class="erp-info">
+    <h4>Septia Sari Naningrum</h4>
+    <p>2314231059</p>
+  </div>
 
 </div>
 <div class="about-footer">
-
   <img src="img/lg.png" class="footer-logo">
 
   <div class="footer-text">
@@ -1120,7 +1155,7 @@ function show(id, el = null){
   }
 
   // 🔽 sembunyikan semua section
-  ['dashboard','input','monitoring','about'].forEach(x=>{
+  ['dashboard','pemasok','monitoring','about'].forEach(x=>{
     const section = document.getElementById(x);
     if(section) section.style.display = 'none';
   });
@@ -1157,7 +1192,7 @@ if(role === "operator"){
   document.getElementById("dashboard").style.display = "none";
 
   // langsung arahkan ke input
-  show('input');
+  show('pemasok');
 }
 // 📥 LOAD DATA
 async function loadData(){
@@ -1165,23 +1200,87 @@ async function loadData(){
     const res = await fetch(API);
     const result = await res.json();
 
-    data = result.map(d => ({
-      id: d.id,
-      kebun: d.kebun || '-',
-      produk: d.produk || '-',
-      jumlah: Number(d.jumlah) || 0,
-      shift: d.shift || '-',
-      tanggal: String(d.tanggal).split('T')[0], // 🔥 NORMALISASI TOTAL
-      keterangan: d.keterangan || '-'
-    }));
+   data = result.map(d => ({
+  id: d.id,
+
+  kebun: d.kebun || '-',
+
+  alamat: d.alamat || '-',
+
+  kontak: d.kontak || '-',
+
+  jumlah: Number(d.jumlah) || 0,
+
+  supir: d.supir || '-',
+
+  plat: d.plat || '-',
+
+  tanggal: d.tanggal || '-'
+}));
 
     render(); // ONLY ONE RENDER HERE
 
   } catch(err){
     console.error(err);
   }
+  //Dropdown
 }
+function initFilterBulanTahun(){
 
+  const bulanSelect =
+    document.getElementById('filterBulan');
+
+  const tahunSelect =
+    document.getElementById('filterTahun');
+
+  if(!bulanSelect || !tahunSelect) return;
+
+  const namaBulan = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ];
+
+  bulanSelect.innerHTML = '';
+
+  namaBulan.forEach((bulan,index)=>{
+
+    bulanSelect.innerHTML += `
+      <option value="${index}">
+        ${bulan}
+      </option>
+    `;
+  });
+
+  tahunSelect.innerHTML = '';
+
+  const tahunSekarang =
+    new Date().getFullYear();
+
+  for(let t=tahunSekarang-5; t<=tahunSekarang+1; t++){
+
+    tahunSelect.innerHTML += `
+      <option value="${t}">
+        ${t}
+      </option>
+    `;
+  }
+
+  bulanSelect.value =
+    new Date().getMonth();
+
+  tahunSelect.value =
+    tahunSekarang;
+}
 // ✏️ EDIT DATA (GLOBAL - FIX ERROR)
 function editData(id){
 
@@ -1195,28 +1294,50 @@ function editData(id){
   }
 
   document.getElementById('kebun').value = d.kebun;
-  document.getElementById('produk').value = d.produk;
-  document.getElementById('jumlah').value = d.jumlah;
-  document.getElementById('shift').value = d.shift;
-  document.getElementById('tanggal').value = d.tanggal;
-  document.getElementById('keterangan').value = d.keterangan;
+
+document.getElementById('alamat').value = d.alamat;
+
+document.getElementById('kontak').value = d.kontak;
+
+document.getElementById('jumlah').value = d.jumlah;
+
+document.getElementById('supir').value = d.supir;
+
+document.getElementById('plat').value = d.plat;
+
+document.getElementById('tanggal').value = d.tanggal;
 
   editId = d.id;
 
-  show('input');
+  show('pemasok');
 }
 
 // 💾 SIMPAN (INSERT + UPDATE)
 async function simpan(){
 
   const payload = {
-    kebun: document.getElementById('kebun').value,
-    produk:document.getElementById('produk').value,
-    jumlah: document.getElementById('jumlah').value,
-    shift: document.getElementById('shift').value,
-    tanggal: document.getElementById('tanggal').value,
-    keterangan: document.getElementById('keterangan').value
-  };
+
+  kebun:
+  document.getElementById('kebun').value,
+
+  alamat:
+  document.getElementById('alamat').value,
+
+  kontak:
+  document.getElementById('kontak').value,
+
+  jumlah:
+  document.getElementById('jumlah').value,
+
+  supir:
+  document.getElementById('supir').value,
+
+  plat:
+  document.getElementById('plat').value,
+
+  tanggal:
+  document.getElementById('tanggal').value
+};
 
   console.log("MODE:", editId ? "UPDATE" : "INSERT");
 
@@ -1253,8 +1374,12 @@ async function simpan(){
 
   // reset form
   document.getElementById('kebun').value = '';
-  document.getElementById('jumlah').value = '';
-  document.getElementById('tanggal').value = '';
+document.getElementById('alamat').value = '';
+document.getElementById('kontak').value = '';
+document.getElementById('jumlah').value = '';
+document.getElementById('supir').value = '';
+document.getElementById('plat').value = '';
+document.getElementById('tanggal').value = '';
 
   await loadData();
 render();
@@ -1276,7 +1401,7 @@ render();
 // 🎨 RENDER
 function render(){
 
-  const targetHarian = 1000;
+  const targetHarian = 900000;
   
 
 
@@ -1297,41 +1422,71 @@ function render(){
 });
 
   // =========================
-  // 🔝 KPI MINGGUAN
-  // =========================
-  let totalMingguan = data7hari.reduce((a,b)=>a+b.jumlah,0);
-  let targetMingguan = targetHarian * 7;
-  // tampilkan target mingguan
+// 🔝 KPI HARIAN
+// =========================
+
+// data hari ini
+let dataHariIni = data.filter(d => {
+
+  if(!d.tanggal) return false;
+
+  return String(d.tanggal).split('T')[0] === today;
+
+});
+
+// total produksi hari ini
+let totalHariIni = dataHariIni.reduce((a,b)=>a+b.jumlah,0);
+
+// target harian
 const targetEl = document.getElementById('target');
+
 if(targetEl){
-  targetEl.innerText = targetMingguan;
+  targetEl.innerText =
+    targetHarian.toLocaleString('id-ID');
 }
 
-  document.getElementById('real').innerText = totalMingguan;
+// realisasi hari ini
+document.getElementById('real').innerText =
+  totalHariIni.toLocaleString('id-ID');
 
-  let efMingguan = ((totalMingguan / targetMingguan) * 100).toFixed(1);
-  document.getElementById('ef').innerText = efMingguan + '%';
+// efisiensi hari ini
+let efHariIni =
+(
+  (totalHariIni / targetHarian) * 100
+).toFixed(1);
 
-  document.getElementById('status').innerText =
-    totalMingguan > 7000 ? 'Tercapai' : 'Belum Tercapai';
+document.getElementById('ef').innerText =
+  efHariIni + '%';
 
-  // =========================
-  // 🔽 KPI HARI INI (OPSIONAL TAMBAHAN)
-  // =========================
-  let dataHariIni = data.filter(d => d.tanggal === today);
+// status
+document.getElementById('status').innerText =
+  totalHariIni > 0
+  ? 'Running'
+  : 'Idle';
 
-  let totalHariIni = dataHariIni.reduce((a,b)=>a+b.jumlah,0);
-  let efHariIni = ((totalHariIni / targetHarian) * 100).toFixed(1);
+// =========================
+// 🔽 KPI HARI INI
+// =========================
 
-  console.log("Hari ini:", totalHariIni, "Ef:", efHariIni);
-  document.getElementById('todayReal').innerText = totalHariIni;
-document.getElementById('todayEf').innerText = efHariIni + '%';
+console.log(
+  "Hari ini:",
+  totalHariIni,
+  "Ef:",
+  efHariIni
+);
+
+document.getElementById('todayReal').innerText =
+  totalHariIni.toLocaleString('id-ID');
+
+document.getElementById('todayEf').innerText =
+  efHariIni + '%';
   // =========================
 // 📊 KPI TAMBAHAN
 // =========================
 
 // total hari ini
-document.getElementById('todayTotal').innerText = totalHariIni;
+document.getElementById('todayTotal').innerText =
+  totalHariIni.toLocaleString('id-ID');
 
 // persen hari ini
 let persenHariIni = ((totalHariIni / targetHarian) * 100).toFixed(1);
@@ -1382,7 +1537,7 @@ if(arr.length === 0){
 let html='';
 
 if(data.length === 0){
-  html = "<tr><td colspan='7'>Data kosong</td></tr>";
+  html = "<tr><td colspan='8'>Data kosong</td></tr>";
 } else {
 
   // 🔽 data sudah diurutkan
@@ -1391,14 +1546,15 @@ if(data.length === 0){
   });
 
   dataSorted.forEach(d=>{
-    html+=`
-    <tr>
-      <td>${d.kebun}</td>
-      <td>${d.produk}</td>
-      <td>${d.jumlah}</td>
-      <td>${d.shift}</td>
-      <td>${d.tanggal}</td>
-      <td>${d.keterangan}</td>
+    html += `
+<tr>
+  <td>${d.kebun}</td>
+  <td>${d.alamat}</td>
+  <td>${d.kontak}</td>
+  <td>${d.jumlah}</td>
+  <td>${d.supir}</td>
+  <td>${d.plat}</td>
+  <td>${d.tanggal}</td>
       <td>
         <button onclick="editData('${d.id}')">Edit</button>
         <button onclick="hapus('${d.id}')">Hapus</button>
@@ -1418,8 +1574,14 @@ let rekap = {};
 // grouping per tanggal
 data.forEach(d => {
   let jumlah = Number(d.jumlah) || 0; // 🔥 pastikan angka
-  if (!rekap[d.tanggal]) rekap[d.tanggal] = 0;
-  rekap[d.tanggal] += jumlah;
+  let tanggalOnly =
+  String(d.tanggal).split('T')[0];
+
+if(!rekap[tanggalOnly]){
+  rekap[tanggalOnly] = 0;
+}
+
+rekap[tanggalOnly] += jumlah;
 });
 
 // ubah object ke array
@@ -1451,85 +1613,147 @@ rekapArray.forEach(item => {
 
 document.getElementById('rekap').innerHTML = htmlRekap;
   // =========================
-// 📈 GRAFIK 7 HARI (3 BELAKANG + HARI INI + 3 DEPAN)
+// 📈 GRAFIK BULAN AKTIF
 // =========================
 
-let range7hari = [];
+// bulan & tahun sekarang
+const bulanAktif =
+Number(
+document.getElementById('filterBulan')?.value ??
+new Date().getMonth()
+);
 
-// ambil range tanggal
-for(let i = -3; i <= 3; i++){
-  let d = new Date();
-  d.setDate(d.getDate() + i);
-  range7hari.push(d.toISOString().split('T')[0]);
+const tahunAktif =
+Number(
+document.getElementById('filterTahun')?.value ??
+new Date().getFullYear()
+);
+
+// ambil jumlah hari dalam bulan
+const jumlahHariBulan = new Date(
+  tahunAktif,
+  bulanAktif + 1,
+  0
+).getDate();
+
+// siapkan label tanggal
+let labels = [];
+let values = [];
+
+// isi label tanggal 1 s/d akhir bulan
+for(let i = 1; i <= jumlahHariBulan; i++){
+
+  labels.push(i);
+
+  const tanggalCari =
+    `${tahunAktif}-${String(bulanAktif + 1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+
+  let totalHari = data
+    .filter(d => {
+
+      if(!d.tanggal) return false;
+
+      const tgl =
+        String(d.tanggal).split('T')[0];
+
+      return tgl === tanggalCari;
+
+    })
+    .reduce((a,b)=> a + Number(b.jumlah),0);
+
+  values.push(totalHari);
 }
 
-// inisialisasi data
-let group = {};
-range7hari.forEach(tgl => {
-  group[tgl] = 0;
-});
-
-// isi data dari database
-data.forEach(d=>{
-  if(group[d.tanggal] !== undefined){
-    group[d.tanggal] += d.jumlah;
-  }
-});
-
-// label & value
-let labels = Object.keys(group);
-let values = Object.values(group);
-
 // destroy chart lama
-if(chart) chart.destroy();
+if(chart){
+  chart.destroy();
+}
 
 // buat chart baru
-chart = new Chart(document.getElementById('chart'),{
+chart = new Chart(
+  document.getElementById('chart'),
+{
   type:'line',
+
   data:{
     labels:labels,
-    datasets:[{
-  label:'Produksi 7 Hari',
-  data:values,
-  borderWidth:3,
-  borderColor:'#2563eb',
-  backgroundColor:'#2563eb',
-  tension:0.4,
-  fill:false,
-  pointRadius:4,
 
-  // 🔥 TAMBAHKAN DI SINI
-  segment: {
-    borderDash: ctx => {
-      // index 3 = hari ini (karena -3 s/d +3)
-      return ctx.p0DataIndex >= 3 ? [6,6] : [];
-    }
-  }
+    datasets:[
+      {
+        label:'Produksi Harian',
 
-},
-{
-    label:'Target Harian',
-    data: labels.map(() => targetHarian), // 🔥 garis flat
-    borderWidth:2,
-    borderColor:'#f59e0b',
-    backgroundColor:'#f59e0b',
-    tension:0.4,
-    borderDash:[5,5], // garis putus-putus
-    pointRadius:0,
-    fill:false
-  }
-]
+        data:values,
+
+        borderColor:'#2563eb',
+        backgroundColor:'#2563eb',
+
+        borderWidth:3,
+
+        tension:0.4,
+
+        fill:false,
+
+        pointRadius:4
+      },
+
+      {
+        label:'Target Harian',
+
+        data: labels.map(() => targetHarian),
+
+        borderColor:'#f59e0b',
+        backgroundColor:'#f59e0b',
+
+        borderDash:[5,5],
+
+        borderWidth:2,
+
+        pointRadius:0,
+
+        fill:false
+      }
+    ]
   },
+
   options:{
     responsive:true,
+
     plugins:{
-      legend:{ display:true }
+      title:{
+        display:true,
+        text:`Produksi Bulan ${
+          bulanAktif + 1
+        }-${tahunAktif}`
+      },
+
+      legend:{
+        display:true
+      }
+    },
+
+    scales:{
+      x:{
+        title:{
+          display:true,
+          text:'Tanggal'
+        }
+      },
+
+      y:{
+        beginAtZero:true,
+
+        title:{
+          display:true,
+          text:'Produksi (kg)'
+        }
+      }
     }
   }
 });
 }
 
 // 🚀 START
+initFilterBulanTahun();
 loadData();
 
 </script>
