@@ -489,12 +489,12 @@ footer{
     </div>
 
     <h1>
-      Monitoring Produksi Perkebunan Kelapa Sawit
+      Monitoring Produksi Pertanian
       <span>Real-Time</span>
     </h1>
 
     <p>
-      PalmEstate membantu monitoring hasil produksi harian,
+      PalmEstate membantu monitoring input bahan baku harian,
       evaluasi target, dan analisis efisiensi produksi
       secara modern, cepat, dan terintegrasi.
     </p>
@@ -572,7 +572,7 @@ footer{
     <div class="live-card">
       <h3>Monitoring Real-Time</h3>
       <p>
-        Data produksi diperbarui secara otomatis
+        Data input TBS diperbarui secara otomatis
         sehingga monitoring menjadi lebih cepat
         dan efisien.
       </p>
@@ -582,7 +582,7 @@ footer{
       <h3>Analisis Efisiensi</h3>
       <p>
         Sistem membantu mengevaluasi pencapaian
-        target produksi harian secara terstruktur.
+        target input TBS harian secara terstruktur.
       </p>
     </div>
 
@@ -611,7 +611,7 @@ footer{
       <h2>Tentang PalmEstate</h2>
 
       <p>
-        PalmEstate merupakan sistem monitoring produksi
+        PalmEstate merupakan sistem monitoring bahan baku
         berbasis web yang dikembangkan untuk mendukung
         pengelolaan data produksi pertanian secara modern.
       </p>
@@ -723,7 +723,7 @@ function render(data){
     efisiensi + "%";
 
   document.getElementById('status').innerText =
-    totalHariIni > 100 ? "Tercapai" : "Belum Tercapai";
+    totalHariIni > 0 ? "Running" : "Idle";
 
   // =====================
   // CHART
