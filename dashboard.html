@@ -245,7 +245,7 @@ body{
 
 .grid .card span{
   display:block;
-  font-size:30px;
+  font-size:20px;
   font-weight:bold;
   margin-top:10px;
 }
@@ -257,7 +257,7 @@ body{
   padding:4px 10px;
   border-radius:20px;
   display:inline-block;
-  font-size:12px;
+  font-size:6px;
 }
 
 .merah{
@@ -267,7 +267,7 @@ body{
   padding:4px 10px;
   border-radius:20px;
   display:inline-block;
-  font-size:12px;
+  font-size:6px;
 }
 .hijau:hover,
 .merah:hover{
@@ -835,6 +835,127 @@ tr:hover{
 
   letter-spacing:1px;
 }
+/* =========================
+   SUPPLIER CARD
+========================= */
+
+.supplier-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:18px;
+}
+
+.supplier-card{
+
+  background:white;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  border-left:5px solid #2563eb;
+
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);
+
+  transition:0.3s;
+}
+
+.supplier-card:hover{
+  transform:translateY(-4px);
+}
+
+.supplier-header{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:12px;
+}
+
+.supplier-title{
+
+  font-size:18px;
+
+  font-weight:600;
+
+  color:#1e293b;
+}
+
+.supplier-badge{
+
+  background:#dbeafe;
+
+  color:#2563eb;
+
+  padding:5px 12px;
+
+  border-radius:20px;
+
+  font-size:12px;
+
+  font-weight:600;
+}
+
+.supplier-info{
+
+  display:grid;
+
+  grid-template-columns:1fr;
+
+  gap:8px;
+}
+
+.info-row{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  border-bottom:1px solid #f1f5f9;
+
+  padding-bottom:6px;
+}
+
+.info-label{
+  color:#64748b;
+  font-size:13px;
+}
+
+.info-value{
+  font-weight:500;
+  color:#0f172a;
+  text-align:right;
+}
+
+.supplier-action{
+
+  margin-top:15px;
+
+  display:flex;
+
+  gap:10px;
+}
+
+.btn-edit{
+  background:#2563eb;
+}
+
+.btn-edit:hover{
+  background:#1d4ed8;
+}
+
+.btn-delete{
+  background:#ef4444;
+}
+
+.btn-delete:hover{
+  background:#dc2626;
+}
 </style>
 </head>
 
@@ -902,7 +1023,7 @@ tr:hover{
     <div class="card">Target: <span id="target">0</span> kg</div>
     <div class="card">Realisasi: <span id="real">0</span></div>
     <div class="card">Efisiensi: <span id="ef">0%</span></div>
-    <div class="card">Status: <span id="status">Idle</span></div>
+    <div class="card">Status: <span id="status">belum Tercapai</span></div>
   </div>
   <div class="grid-kecil">
 
@@ -932,6 +1053,13 @@ tr:hover{
 </div>
 <div class="card">
 
+  <h3>Grafik Produksi 7 Hari Terakhir</h3>
+
+  <canvas id="chart7hari"></canvas>
+
+</div>
+<div class="card">
+
   <h3>Grafik Produksi Bulanan</h3>
 
   <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -949,6 +1077,7 @@ tr:hover{
 </div> <!-- penutup dashboard -->
 
 
+
 <div id="pemasok" style="display:none">
   <div class="card">
     <h3>Data Pemasok</h3>
@@ -964,6 +1093,9 @@ tr:hover{
 <input id="supir" placeholder="Nama Supir">
 
 <input id="plat" placeholder="No Plat">
+<input id="tujuan" placeholder="Tujuan Pengiriman">
+
+<input id="muatan" placeholder="Muatan Logistik">
 
 <input
   type="datetime-local"
@@ -977,7 +1109,7 @@ tr:hover{
 
 <div id="monitoring" style="display:none">
   <div class="card">
-    <h3>Data Produksi</h3>
+    <h3>Data Pemasok</h3>
     <table width="100%">
       <thead>
 <tr>
@@ -1007,7 +1139,14 @@ tr:hover{
     <tbody id="rekap"></tbody>
   </table>
 </div>
+<div class="card">
+  <h3>Informasi Pemasok</h3>
 
+  <div id="supplierCards" class="supplier-grid">
+    <!-- otomatis dari javascript -->
+  </div>
+
+</div>
 </div>
 <div id="about" style="display:none">
 
@@ -1129,6 +1268,7 @@ const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
 // ✅ GLOBAL VARIABLE
 let data = [];
 let chart;
+let chart7hari;
 let editId = null;
 
 // 🔁 NAVIGASI
@@ -1201,21 +1341,26 @@ async function loadData(){
     const result = await res.json();
 
    data = result.map(d => ({
-  id: d.id,
 
-  kebun: d.kebun || '-',
+  id:d.id,
 
-  alamat: d.alamat || '-',
+  kebun:d.kebun || '-',
 
-  kontak: d.kontak || '-',
+  alamat:d.alamat || '-',
 
-  jumlah: Number(d.jumlah) || 0,
+  kontak:d.kontak || '-',
 
-  supir: d.supir || '-',
+  jumlah:Number(d.jumlah) || 0,
 
-  plat: d.plat || '-',
+  supir:d.supir || '-',
 
-  tanggal: d.tanggal || '-'
+  plat:d.plat || '-',
+
+  tujuan:d.tujuan || '-',
+
+  muatan:d.muatan || '-',
+
+  tanggal:d.tanggal || '-'
 }));
 
     render(); // ONLY ONE RENDER HERE
@@ -1304,6 +1449,11 @@ document.getElementById('jumlah').value = d.jumlah;
 document.getElementById('supir').value = d.supir;
 
 document.getElementById('plat').value = d.plat;
+document.getElementById('tujuan').value =
+d.tujuan || '';
+
+document.getElementById('muatan').value =
+d.muatan || '';
 
 document.getElementById('tanggal').value = d.tanggal;
 
@@ -1334,6 +1484,11 @@ async function simpan(){
 
   plat:
   document.getElementById('plat').value,
+  tujuan:
+document.getElementById('tujuan').value,
+
+muatan:
+document.getElementById('muatan').value,
 
   tanggal:
   document.getElementById('tanggal').value
@@ -1379,6 +1534,9 @@ document.getElementById('kontak').value = '';
 document.getElementById('jumlah').value = '';
 document.getElementById('supir').value = '';
 document.getElementById('plat').value = '';
+document.getElementById('tujuan').value = '';
+
+document.getElementById('muatan').value = '';
 document.getElementById('tanggal').value = '';
 
   await loadData();
@@ -1459,10 +1617,15 @@ document.getElementById('ef').innerText =
   efHariIni + '%';
 
 // status
-document.getElementById('status').innerText =
-  totalHariIni > 0
-  ? 'Running'
-  : 'Idle';
+const statusEl = document.getElementById('status');
+
+if(totalHariIni >= targetHarian){
+  statusEl.innerHTML =
+    '<span class="hijau">Tercapai</span>';
+}else{
+  statusEl.innerHTML =
+    '<span class="merah">Belum Tercapai</span>';
+}
 
 // =========================
 // 🔽 KPI HARI INI
@@ -1563,6 +1726,86 @@ if(data.length === 0){
   });
 }
   document.getElementById('tabel').innerHTML = html;
+
+//Pemasok 
+let supplierHTML = '';
+
+data.forEach(d=>{
+
+supplierHTML += `
+
+<div class="supplier-card">
+
+  <div class="supplier-header">
+
+    <div class="supplier-title">
+      ${d.kebun}
+    </div>
+
+    <div class="supplier-badge">
+      ${d.jumlah} Kg
+    </div>
+
+  </div>
+
+  <div class="supplier-info">
+
+    <div class="info-row">
+      <span class="info-label">No Plat</span>
+      <span class="info-value">${d.plat}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Supir</span>
+      <span class="info-value">${d.supir}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Kontak</span>
+      <span class="info-value">${d.kontak}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Tujuan</span>
+      <span class="info-value">${d.tujuan}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Muatan</span>
+      <span class="info-value">${d.muatan}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Waktu Masuk</span>
+      <span class="info-value">${d.tanggal}</span>
+    </div>
+
+  </div>
+
+  <div class="supplier-action">
+
+    <button
+      class="btn-edit"
+      onclick="editData('${d.id}')">
+      Edit
+    </button>
+
+    <button
+      class="btn-delete"
+      onclick="hapus('${d.id}')">
+      Hapus
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById('supplierCards').innerHTML =
+supplierHTML;
 // =========================
 // 📊 REKAP HARIAN (SORTED FIX)
 // =========================
@@ -1732,6 +1975,178 @@ chart = new Chart(
     },
 
     scales:{
+      x:{
+        title:{
+          display:true,
+          text:'Tanggal'
+        }
+      },
+
+      y:{
+        beginAtZero:true,
+
+        title:{
+          display:true,
+          text:'Produksi (kg)'
+        }
+      }
+    }
+  }
+});
+// =========================
+// 📈 GRAFIK 7 HARI TERAKHIR
+// =========================
+
+// ambil 7 hari terakhir
+let labels7 = [];
+let values7 = [];
+
+for(let i = 6; i >= 0; i--){
+
+  let d = new Date();
+
+  d.setDate(d.getDate() - i);
+
+  let tanggal =
+    d.toISOString().split('T')[0];
+
+  labels7.push(
+    tanggal.substring(5) // MM-DD
+  );
+
+  let total = data
+    .filter(x => {
+
+      if(!x.tanggal) return false;
+
+      return String(x.tanggal)
+      .split('T')[0] === tanggal;
+
+    })
+    .reduce((a,b)=>
+      a + Number(b.jumlah),0);
+
+  values7.push(total);
+}
+
+// hapus chart lama
+if(chart7hari){
+  chart7hari.destroy();
+}
+
+// gradient hasil produksi
+const ctx7 =
+document.getElementById('chart7hari');
+
+const gradientProduksi =
+ctx7.getContext('2d')
+.createLinearGradient(
+  0,0,0,300
+);
+
+gradientProduksi.addColorStop(
+  0,
+  'rgba(37,99,235,0.35)'
+);
+
+gradientProduksi.addColorStop(
+  1,
+  'rgba(37,99,235,0.02)'
+);
+
+// gradient target
+const gradientTarget =
+ctx7.getContext('2d')
+.createLinearGradient(
+  0,0,0,300
+);
+
+gradientTarget.addColorStop(
+  0,
+  'rgba(245,158,11,0.25)'
+);
+
+gradientTarget.addColorStop(
+  1,
+  'rgba(245,158,11,0.02)'
+);
+
+// buat chart
+chart7hari = new Chart(ctx7,{
+
+  type:'line',
+
+  data:{
+    labels:labels7,
+
+    datasets:[
+
+      {
+        label:'Produksi Aktual',
+
+        data:values7,
+
+        borderColor:'#2563eb',
+
+        backgroundColor:
+        gradientProduksi,
+
+        fill:true,
+
+        borderWidth:3,
+
+        tension:0.4,
+
+        pointRadius:5
+      },
+
+      {
+        label:'Target Harian',
+
+        data:labels7.map(
+          ()=>targetHarian
+        ),
+
+        borderColor:'#f59e0b',
+
+        backgroundColor:
+        gradientTarget,
+
+        fill:true,
+
+        borderWidth:2,
+
+        borderDash:[8,5],
+
+        tension:0.2,
+
+        pointRadius:0
+      }
+    ]
+  },
+
+  options:{
+    responsive:true,
+
+    interaction:{
+      mode:'index',
+      intersect:false
+    },
+
+    plugins:{
+
+      legend:{
+        display:true
+      },
+
+      title:{
+        display:true,
+        text:'Perbandingan Produksi dan Target 7 Hari Terakhir'
+      }
+    },
+
+    scales:{
+
       x:{
         title:{
           display:true,
