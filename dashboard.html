@@ -1227,7 +1227,7 @@ if(!sessionStorage.getItem("user")){
 }
 
 // 🔗 API Google Sheets (SheetDB)
-const API = "https://sheetdb.io/api/v1/e9w3n4ozmno6b";
+const API = "https://sheetdb.io/api/v1/qzloj1f3fxy92";
 
 // ✅ GLOBAL VARIABLE
 let data = [];
@@ -1454,6 +1454,7 @@ function normalisasiTanggal(tanggal){
 
 }
 // ✏️ EDIT DATA (GLOBAL - FIX ERROR)
+// ✏️ EDIT DATA SUPPLIER
 function editData(id){
 
   console.log("EDIT CLICK:", id);
@@ -1465,28 +1466,43 @@ function editData(id){
     return;
   }
 
+
+  // isi form input pemasok
   document.getElementById('kebun').value = d.kebun;
+  document.getElementById('alamat').value = d.alamat;
+  document.getElementById('kontak').value = d.kontak;
+  document.getElementById('jumlah').value = d.jumlah;
+  document.getElementById('supir').value = d.supir;
+  document.getElementById('plat').value = d.plat;
+  document.getElementById('muatan').value = d.muatan || '';
+  document.getElementById('tanggal').value = d.tanggal;
 
-document.getElementById('alamat').value = d.alamat;
 
-document.getElementById('kontak').value = d.kontak;
-
-document.getElementById('jumlah').value = d.jumlah;
-
-document.getElementById('supir').value = d.supir;
-
-document.getElementById('plat').value = d.plat;
-
-document.getElementById('muatan').value =
-d.muatan || '';
-
-document.getElementById('tanggal').value = d.tanggal;
-
+  // simpan ID untuk proses update
   editId = d.id;
 
-  show('pemasok');
-}
 
+  // pindah ke halaman input pemasok
+  show('pemasok');
+
+
+  // otomatis scroll ke form input
+  setTimeout(()=>{
+
+    document.getElementById('kebun')
+    .scrollIntoView({
+      behavior:'smooth',
+      block:'center'
+    });
+
+  },300);
+
+
+  // ubah tombol menjadi update
+  document.querySelector('#pemasok button')
+  .innerText = "Update Data";
+
+}
 // 💾 SIMPAN (INSERT + UPDATE)
 async function simpan(){
 
@@ -1537,25 +1553,29 @@ console.log("DATA KIRIM:", payload);
   } else {
 
     // ✅ INSERT
-   await fetch(API,{
+   const response = await fetch(API,{
   method:'POST',
   headers:{
     'Content-Type':'application/json'
   },
   body: JSON.stringify({
-  data:{
-    id: Date.now(),
-    kebun: payload.kebun,
-    alamat: payload.alamat,
-    kontak: payload.kontak,
-    jumlah: payload.jumlah,
-    supir: payload.supir,
-    plat: payload.plat,
-    muatan: payload.muatan,
-    tanggal: payload.tanggal
-  }
-})
+    data:{
+      id: Date.now(),
+      kebun: payload.kebun,
+      alamat: payload.alamat,
+      kontak: payload.kontak,
+      jumlah: payload.jumlah,
+      supir: payload.supir,
+      plat: payload.plat,
+      muatan: payload.muatan,
+      tanggal: payload.tanggal
+    }
+  })
 });
+
+const result = await response.json();
+
+console.log(result);
 
     notif("Data berhasil ditambahkan");
   }
@@ -1570,6 +1590,8 @@ document.getElementById('plat').value = '';
 
 document.getElementById('muatan').value = '';
 document.getElementById('tanggal').value = '';
+document.querySelector('#pemasok button')
+.innerText = "Simpan";
 
   await loadData();
   render();
@@ -2352,7 +2374,7 @@ setInterval(()=>{
 
 loadData();
 
-},30000);
+},500000);
 
 </script>
 
