@@ -722,7 +722,15 @@ function formatTanggalLokal(date){
   return `${tahun}-${bulan}-${hari}`;
 
 }
+function normalisasiTanggal(tanggal){
 
+  if(!tanggal) return '';
+
+  return String(tanggal)
+    .split('T')[0]
+    .split(' ')[0];
+
+}
 
 
 async function loadData(){
@@ -740,7 +748,7 @@ let data = result.map(d=>({
 
 jumlah:Number(d.jumlah)||0,
 
-tanggal:String(d.tanggal || '').substring(0,10)
+tanggal: normalisasiTanggal(d.tanggal)
 
 }));
 
@@ -890,7 +898,10 @@ x.tanggal===tanggal
 );
 
 
-
+console.log(
+  tanggal,
+  total
+);
 values.push(total);
 
 
